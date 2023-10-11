@@ -8,6 +8,7 @@ require("dotenv").config();
 const errorHandler = require("./middleware/error-handler");
 const notFound = require("./middleware/not-found");
 const morgan = require("morgan");
+const authRouter = require("./routes/AuthRoutes");
 
 const app = express();
 
@@ -21,6 +22,8 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.send("<h1>E-commerce App</h1>");
 });
+
+app.use("/api/v1/auth", authRouter);
 //errors middleware    404(not found)goes first!!!
 // we hit this only then route does not exist
 app.use(notFound);
