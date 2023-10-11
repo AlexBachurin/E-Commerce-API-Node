@@ -2,7 +2,7 @@ const UserModel = require("../models/User-Model");
 const { StatusCodes } = require("http-status-codes");
 const { BadRequestError } = require("../errors");
 const hashPassword = require("../utils/hashPassword");
-const { createJWT } = require("../utils/jwt");
+const { createJWT, attachCookiesToResponse } = require("../utils/jwt");
 
 const register = async (req, res) => {
   const { email, name, password } = req.body;
@@ -34,11 +34,8 @@ const register = async (req, res) => {
   };
   const token = createJWT({ payload: tokenUser });
   //   *** Cookies ***
-  // add token to cookies
-  res.cookie("token", token, {
-    httpOnly: true,
-    expires: new Date(Date.now() + 1000 * 60 * 60 * 24), //1day
-  });
+  // add token to cookies with response
+  attachCookiesToResponse({ res, payload: tokenUser });
   res.status(StatusCodes.CREATED).json({ user: tokenUser });
 };
 

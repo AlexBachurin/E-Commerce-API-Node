@@ -9,17 +9,22 @@ const errorHandler = require("./middleware/error-handler");
 const notFound = require("./middleware/not-found");
 const morgan = require("morgan");
 const authRouter = require("./routes/AuthRoutes");
+const cookieParser = require("cookie-parser");
 
 const app = express();
 
 // *** MIDDLEWARE ***
 // morgan
 app.use(morgan("tiny"));
+// cookie parser, with it every time browser will be sending request with
+// the cookies, and we will have access in req.cookies on the server
+app.use(cookieParser());
 // json middleware
 app.use(express.json());
 
 // *** ROUTES ***
 app.get("/", (req, res) => {
+  // console.log(req.cookies);
   res.send("<h1>E-commerce App</h1>");
 });
 

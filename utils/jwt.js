@@ -13,4 +13,15 @@ const isTokenValid = ({ token }) => {
   return jwt.verify(token, process.env.JWT_SECRET);
 };
 
-module.exports = { createJWT, isTokenValid };
+// attach cookies with jwt
+const attachCookiesToResponse = ({ res, payload }) => {
+  //create jwt
+  const token = createJWT({ payload });
+  // attach cookies to response
+  res.cookie("token", token, {
+    httpOnly: true,
+    expires: new Date(Date.now() + 1000 * 60 * 60 * 24), //1day
+  });
+};
+
+module.exports = { createJWT, isTokenValid, attachCookiesToResponse };
