@@ -33,7 +33,13 @@ const register = async (req, res) => {
     role: user.role,
   };
   const token = createJWT({ payload: tokenUser });
-  res.status(StatusCodes.CREATED).json({ user: tokenUser, token: token });
+  //   *** Cookies ***
+  // add token to cookies
+  res.cookie("token", token, {
+    httpOnly: true,
+    expires: new Date(Date.now() + 1000 * 60 * 60 * 24), //1day
+  });
+  res.status(StatusCodes.CREATED).json({ user: tokenUser });
 };
 
 const login = async (req, res) => {
