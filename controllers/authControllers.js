@@ -2,6 +2,7 @@ const UserModel = require("../models/User-Model");
 const { StatusCodes } = require("http-status-codes");
 const { BadRequestError } = require("../errors");
 const hashPassword = require("../utils/hashPassword");
+const { createJWT } = require("../utils/jwt");
 
 const register = async (req, res) => {
   const { email, name, password } = req.body;
@@ -24,7 +25,15 @@ const register = async (req, res) => {
     email,
     password: hashedPassword,
   });
-  res.status(StatusCodes.CREATED).json({ user });
+
+  //   *** Create JWT TOKEN ***
+  const tokenUser = {
+    name: user.name,
+    userId: user._id,
+    role: user.role,
+  };
+  const token = createJWT({ payload: tokenUser });
+  res.status(StatusCodes.CREATED).json({ user: tokenUser, token: token });
 };
 
 const login = async (req, res) => {
