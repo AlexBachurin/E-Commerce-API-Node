@@ -22,7 +22,7 @@ const UserSchema = new mongoose.Schema({
       message: "Please provide valid email",
     },
     //unique index, if email in use we get duplicate message
-    unique: true,
+    //unique: true,
   },
   password: {
     type: String,
