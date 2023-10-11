@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
+const bcrypt = require("bcryptjs");
 
 const UserSchema = new mongoose.Schema({
   name: {
@@ -28,7 +29,6 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please provide password"],
     minlength: 6,
-    maxlength: 50,
   },
   //role user or admin
   role: {
@@ -37,5 +37,17 @@ const UserSchema = new mongoose.Schema({
     default: "user",
   },
 });
+
+// hash password
+// UserSchema.pre("save", async function () {
+//   const salt = await bcrypt.genSalt(10);
+//   this.password = await bcrypt.hash(this.password, salt);
+// });
+
+// compare password
+UserSchema.methods.comparePassword = async function (userPassword) {
+  const isMatch = await bcrypt.compare(userPassword, this.password);
+  return isMatch;
+};
 
 module.exports = mongoose.model("User", UserSchema);

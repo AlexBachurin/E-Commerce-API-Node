@@ -1,22 +1,29 @@
 const UserModel = require("../models/User-Model");
 const { StatusCodes } = require("http-status-codes");
 const { BadRequestError } = require("../errors");
+const hashPassword = require("../utils/hashPassword");
 
 const register = async (req, res) => {
   const { email, name, password } = req.body;
-  //check for duplicate email, try to find this email in db
+  // *** check for duplicate email, try to find this email in db ***
   const emailAlreadyInUse = await UserModel.findOne({ email });
-  //   if user exists throw error, if not create new user
   if (emailAlreadyInUse) {
     throw new BadRequestError("Email already in use");
   }
-  //   first registered user is an admin functionality
+  //   *** first registered user is an admin functionality ***
   //const isFirstAccount = await User.countDocuments({}) === 0;
   // const role = isFirstAccount ? 'admin' : 'user';
 
+  //*** Hash Password ***//
+  const hashedPassword = await hashPassword(password);
+
   //for more security on user creation: destructure and pass only
   //name, email, pw etc. without user role,which can be admin
-  const user = await UserModel.create({ name, email, password, role });
+  const user = await UserModel.create({
+    name,
+    email,
+    password: hashedPassword,
+  });
   res.status(StatusCodes.CREATED).json({ user });
 };
 
