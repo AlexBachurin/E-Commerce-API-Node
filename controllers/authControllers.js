@@ -69,7 +69,13 @@ const login = async (req, res) => {
 };
 
 const logout = async (req, res) => {
-  res.send("logout");
+  //set token cookie equal to some string value
+  res.cookie("token", "logout", {
+    httpOnly: true,
+    // set expires time to current time
+    expires: new Date(Date.now()),
+  });
+  res.status(StatusCodes.OK).json({ msg: "logout success" });
 };
 
 module.exports = { register, login, logout };
