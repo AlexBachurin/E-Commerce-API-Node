@@ -18,13 +18,13 @@ const app = express();
 app.use(morgan("tiny"));
 // cookie parser, with it every time browser will be sending request with
 // the cookies, and we will have access in req.cookies on the server
-app.use(cookieParser());
+app.use(cookieParser(process.env.JWT_SECRET));
 // json middleware
 app.use(express.json());
 
 // *** ROUTES ***
 app.get("/", (req, res) => {
-  // console.log(req.cookies);
+  // console.log(req.signedCookies);
   res.send("<h1>E-commerce App</h1>");
 });
 
