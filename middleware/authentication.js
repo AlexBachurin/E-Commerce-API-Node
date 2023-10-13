@@ -23,15 +23,17 @@ const authenticateUser = async (req, res, next) => {
   }
 };
 
-const authorizePermissions = (req, res, next) => {
-  //  check user role, if its role is admin, authorize permisson to the route
-  // if not throw error with 403
-  // we have access to req.user, since its our second middleware
-  if (req.user.role !== "admin") {
-    throw new UnauthtorizedError("No permission to access this route");
-  } else {
-  }
-  next();
+// check user roles to authorizes permission to some routes for only selected roles
+const authorizePermissions = (...authorizedRoles) => {
+  // return back function to have access to req,res,next as a callback
+  return (req, res, next) => {
+    // check if user have role that is have permission to access admin protected routes
+    // if not throw error
+    if (!authorizedRoles.includes(req.user.role)) {
+      throw new UnauthtorizedError("Unauthorized to access this route");
+    }
+    next();
+  };
 };
 
 module.exports = { authenticateUser, authorizePermissions };

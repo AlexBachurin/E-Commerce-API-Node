@@ -21,7 +21,9 @@ const userRouter = express.Router();
 
 // stick authentication middleware to access user routes
 // first authenticate the user, then check for admin
-userRouter.route("/").get(authenticateUser, authorizePermissions, getAllUsers);
+userRouter
+  .route("/")
+  .get(authenticateUser, authorizePermissions("admin", "owner"), getAllUsers);
 userRouter.route("/showMe").get(showCurrentUser);
 userRouter.route("/updateUser").patch(updateUser);
 userRouter.route("/updateUserPassword").patch(updateUserPassword);
