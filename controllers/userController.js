@@ -9,6 +9,7 @@ const comparePassword = require("../utils/comparePassword");
 const hashPassword = require("../utils/hashPassword");
 const createTokenUser = require("../utils/createTokenUser");
 const { attachCookiesToResponse } = require("../utils/jwt");
+const checkPermissions = require("../utils/checkPermissions");
 
 const getAllUsers = async (req, res) => {
   //find all users whom role is "user" and remove password from response
@@ -23,6 +24,9 @@ const getSingleUser = async (req, res) => {
   if (!user) {
     throw new NotFoundError("No User with such id");
   }
+  // restrict access to only view user info if id matches with current user
+  // so user cannot access routes with id of other users
+  checkPermissions(req.user, user._id);
   res.status(StatusCodes.OK).json({ user });
 };
 
