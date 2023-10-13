@@ -7,6 +7,8 @@ const UserModel = require("../models/User-Model");
 const { StatusCodes } = require("http-status-codes");
 const comparePassword = require("../utils/comparePassword");
 const hashPassword = require("../utils/hashPassword");
+const createTokenUser = require("../utils/createTokenUser");
+const { attachCookiesToResponse } = require("../utils/jwt");
 
 const getAllUsers = async (req, res) => {
   //find all users whom role is "user" and remove password from response
@@ -29,8 +31,24 @@ const showCurrentUser = (req, res) => {
   res.status(StatusCodes.OK).json({ user });
 };
 
-const updateUser = (req, res) => {
-  res.send(req.body);
+const updateUser = async (req, res) => {
+  const { name, email } = req.body;
+  // check for name and email
+  if (!email || !name) {
+    throw new BadRequestError("Name and email must be provided");
+  }
+  // find user and update
+  const user = await UserModel.findOneAndUpdate(
+    { _id: req.user.userId },
+    { email, name },
+    { new: true, runValidators: true }
+  );
+  // create token user, since our value changed
+  const tokenUser = createTokenUser(user);
+  // attach cookies
+  attachCookiesToResponse({ res, payload: tokenUser });
+  // send back to front-end updated user info
+  res.status(StatusCodes.OK).json({ user: tokenUser });
 };
 
 const updateUserPassword = async (req, res) => {

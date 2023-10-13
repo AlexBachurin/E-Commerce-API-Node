@@ -4,6 +4,7 @@ const { BadRequestError, UnauthenticatedError } = require("../errors");
 const hashPassword = require("../utils/hashPassword");
 const { createJWT, attachCookiesToResponse } = require("../utils/jwt");
 const comparePassword = require("../utils/comparePassword");
+const createTokenUser = require("../utils/createTokenUser");
 
 const register = async (req, res) => {
   const { email, name, password } = req.body;
@@ -28,11 +29,7 @@ const register = async (req, res) => {
   });
 
   //   *** Create JWT TOKEN ***
-  const tokenUser = {
-    name: user.name,
-    userId: user._id,
-    role: user.role,
-  };
+  const tokenUser = createTokenUser(user);
   //   *** Cookies ***
   // add token to cookies with response
   attachCookiesToResponse({ res, payload: tokenUser });
@@ -56,11 +53,7 @@ const login = async (req, res) => {
     throw new UnauthenticatedError("Wrong password");
   }
   //   *** Create JWT TOKEN ***
-  const tokenUser = {
-    name: user.name,
-    userId: user._id,
-    role: user.role,
-  };
+  const tokenUser = createTokenUser(user);
   //   *** Cookies ***
   // add token to cookies with response
   attachCookiesToResponse({ res, payload: tokenUser });
