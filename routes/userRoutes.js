@@ -6,6 +6,7 @@ const {
   updateUser,
   updateUserPassword,
 } = require("../controllers/userController");
+const authenticateUser = require("../middleware/authentication");
 
 const userRouter = express.Router();
 
@@ -14,11 +15,13 @@ const userRouter = express.Router();
 // userRouter.post("/updateUser", updateUser);
 // userRouter.post("/updateUserPassword", updateUserPassword);
 // userRouter.get("/:id", getSingleUser);
-userRouter.route("/").get(getAllUsers);
+
+// stick authentication middleware to access user routes
+userRouter.route("/").get(authenticateUser, getAllUsers);
 userRouter.route("/showMe").get(showCurrentUser);
 userRouter.route("/updateUser").patch(updateUser);
 userRouter.route("/updateUserPassword").patch(updateUserPassword);
 // route with id should be last, so we can access showMe and etc. routes
-userRouter.route("/:id").get(getSingleUser);
+userRouter.route("/:id").get(authenticateUser, getSingleUser);
 
 module.exports = userRouter;
