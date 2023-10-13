@@ -6,7 +6,10 @@ const {
   updateUser,
   updateUserPassword,
 } = require("../controllers/userController");
-const authenticateUser = require("../middleware/authentication");
+const {
+  authenticateUser,
+  authorizePermissions,
+} = require("../middleware/authentication");
 
 const userRouter = express.Router();
 
@@ -17,7 +20,8 @@ const userRouter = express.Router();
 // userRouter.get("/:id", getSingleUser);
 
 // stick authentication middleware to access user routes
-userRouter.route("/").get(authenticateUser, getAllUsers);
+// first authenticate the user, then check for admin
+userRouter.route("/").get(authenticateUser, authorizePermissions, getAllUsers);
 userRouter.route("/showMe").get(showCurrentUser);
 userRouter.route("/updateUser").patch(updateUser);
 userRouter.route("/updateUserPassword").patch(updateUserPassword);
