@@ -26,10 +26,33 @@ const getSingleUser = async (req, res) => {
   res.status(StatusCodes.OK).json({ user });
 };
 
-const showCurrentUser = (req, res) => {
+const showCurrentUser = async (req, res) => {
   const user = req.user;
   res.status(StatusCodes.OK).json({ user });
 };
+
+// UPDATE USER with findOneAndUpdate()
+// const updateUser = async (req, res) => {
+//   const { name, email } = req.body;
+//   // check for name and email
+//   if (!email || !name) {
+//     throw new BadRequestError("Name and email must be provided");
+//   }
+//   // find user and update
+//   const user = await UserModel.findOneAndUpdate(
+//     { _id: req.user.userId },
+//     { email, name },
+//     { new: true, runValidators: true }
+//   );
+//   // create token user, since our value changed
+//   const tokenUser = createTokenUser(user);
+//   // attach cookies
+//   attachCookiesToResponse({ res, payload: tokenUser });
+//   // send back to front-end updated user info
+//   res.status(StatusCodes.OK).json({ user: tokenUser });
+// };
+
+// update User with user.save();
 
 const updateUser = async (req, res) => {
   const { name, email } = req.body;
@@ -37,12 +60,13 @@ const updateUser = async (req, res) => {
   if (!email || !name) {
     throw new BadRequestError("Name and email must be provided");
   }
-  // find user and update
-  const user = await UserModel.findOneAndUpdate(
-    { _id: req.user.userId },
-    { email, name },
-    { new: true, runValidators: true }
-  );
+  // find user
+  const user = await UserModel.findOne({ _id: req.user.userId });
+  // update user
+  user.email = email;
+  user.name = name;
+  // save
+  await user.save();
   // create token user, since our value changed
   const tokenUser = createTokenUser(user);
   // attach cookies
@@ -72,7 +96,7 @@ const updateUserPassword = async (req, res) => {
   // if old password provided from user matches with this user password
   // hash password here or we can use "pre" method in UserModel, then no need to hash it here it will hash automatically on user.save();
   user.password = await hashPassword(newPassword);
-  user.save();
+  await user.save();
   res.status(StatusCodes.OK).json({ msg: "Success! password updated" });
 };
 

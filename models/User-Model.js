@@ -40,6 +40,9 @@ const UserSchema = new mongoose.Schema({
 
 // hash password
 // UserSchema.pre("save", async function () {
+// only apply hashing password functionality if we modifying password
+// if we modifying user name or email just dont do the code below
+//   if (!this.isModified('password')) return
 //   const salt = await bcrypt.genSalt(10);
 //   this.password = await bcrypt.hash(this.password, salt);
 // });
