@@ -10,6 +10,7 @@ const notFound = require("./middleware/not-found");
 const morgan = require("morgan");
 const authRouter = require("./routes/AuthRoutes");
 const cookieParser = require("cookie-parser");
+const userRouter = require("./routes/userRoutes");
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/users", userRouter);
 //errors middleware    404(not found)goes first!!!
 // we hit this only then route does not exist
 app.use(notFound);
