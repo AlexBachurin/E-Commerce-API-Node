@@ -24,7 +24,7 @@ const userRouter = express.Router();
 userRouter
   .route("/")
   .get(authenticateUser, authorizePermissions("admin", "owner"), getAllUsers);
-userRouter.route("/showMe").get(showCurrentUser);
+userRouter.route("/showMe").get(authenticateUser, showCurrentUser);
 userRouter.route("/updateUser").patch(updateUser);
 userRouter.route("/updateUserPassword").patch(updateUserPassword);
 // route with id should be last, so we can access showMe and etc. routes
