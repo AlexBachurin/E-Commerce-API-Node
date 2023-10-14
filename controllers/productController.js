@@ -1,8 +1,10 @@
+const { BadRequestError } = require("../errors");
 const ProductModel = require("../models/ProductModel");
 const { StatusCodes } = require("http-status-codes");
 
-const getAllProducts = (req, res) => {
-  res.send("get all products");
+const getAllProducts = async (req, res) => {
+  const products = await ProductModel.find({});
+  res.status(StatusCodes.OK).json({ products, count: products.length });
 };
 
 const createProduct = async (req, res) => {
@@ -14,16 +16,39 @@ const createProduct = async (req, res) => {
   res.status(StatusCodes.CREATED).json({ product });
 };
 
-const getSingleProduct = (req, res) => {
-  res.send("get single product");
+const getSingleProduct = async (req, res) => {
+  const productId = req.params.id;
+  const product = await ProductModel.findOne({ _id: productId });
+  if (!product) {
+    throw new BadRequestError(`No product with id of: ${productId}`);
+  }
+  res.status(StatusCodes.OK).json({ product });
 };
 
-const updateProduct = (req, res) => {
-  res.send("update product");
+const updateProduct = async (req, res) => {
+  const productId = req.params.id;
+  const product = await ProductModel.findOneAndUpdate(
+    { _id: productId },
+    req.body,
+    { new: true, runValidators: true }
+  );
+  if (!product) {
+    throw new BadRequestError(`No product with id of: ${productId}`);
+  }
+  res.status(StatusCodes.OK).json({ product });
 };
 
-const deleteProduct = (req, res) => {
-  res.send("delete Product");
+const deleteProduct = async (req, res) => {
+  const productId = req.params.id;
+  const product = await ProductModel.findOneAndDelete({
+    _id: productId,
+  });
+  if (!product) {
+    throw new BadRequestError(`No product with id of: ${productId}`);
+  }
+  res
+    .status(StatusCodes.OK)
+    .json({ msg: "Success! Product deleted from the list" });
 };
 
 const uploadImage = (req, res) => {
