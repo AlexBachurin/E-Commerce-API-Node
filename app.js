@@ -12,6 +12,7 @@ const authRouter = require("./routes/AuthRoutes");
 const cookieParser = require("cookie-parser");
 const userRouter = require("./routes/userRoutes");
 const productRouter = require("./routes/productRoutes");
+const fileUpload = require("express-fileupload");
 
 const app = express();
 
@@ -23,6 +24,9 @@ app.use(morgan("tiny"));
 app.use(cookieParser(process.env.JWT_SECRET));
 // json middleware
 app.use(express.json());
+// file upload
+app.use(express.static("./public"));
+app.use(fileUpload());
 
 // *** ROUTES ***
 app.get("/", (req, res) => {
